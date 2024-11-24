@@ -6,10 +6,7 @@ read -sp "OpenNebula password: " ONEPASS
 echo 
 
 echo "$ONEUNAME:$ONEPASS" > ~/.one/one_auth
-<<<<<<< HEAD
 
-=======
->>>>>>> c6f3428 (Add ansible pyone package fix. Add script for OpenNebula credentials)
 sudo apt update
 UBUNTU_CODENAME=jammy
 sudo apt-get -y install gnupg wget apt-transport-https
