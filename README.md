@@ -10,3 +10,20 @@
 
 Thats it, everything else will be set up from the main vm
 	 
+# The ansible-vm part
+1. create ubuntu 22.04 vm with 8 GB of disk
+2. enter into it
+3. run: 
+```
+su # to become root
+cd ~ # to go to root's home dir (important!)
+apt update
+install git
+git clone https://github.com/dmitru4ok/virtualization-project.git
+cd virtualization-project/telecomms/shell
+chmod +x Main.sh
+./Main.sh
+```
+4. The script will ask you for your OpenNebula creadentials.
+5. then ansible-vm long updating will start
+6. after that, it will create webserver-vm (no config) and populate hosts file with its private ip
