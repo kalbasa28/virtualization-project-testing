@@ -18,7 +18,7 @@
         attributes:
           name: webserver-vm
         state: present
-      environment: 
+      environment:
         ONE_AUTH: /root/auth/webserver_auth
       register: webres
 
@@ -32,13 +32,13 @@
         attributes:
           name: db-vm
         state: present
-      environment: 
+      environment:
         ONE_AUTH: /root/auth/db_auth
       register: dbres
 
     - debug:
         msg: "Database IP: {{ dbres.instances[0].networks[0].ip }}"
-    
+
     - name: Instantiate client templated VM
       community.general.one_vm:
         api_url: https://grid5.mif.vu.lt/cloud3/RPC2
@@ -46,12 +46,12 @@
         attributes:
           name: client-vm
         state: present
-      environment: 
+      environment:
         ONE_AUTH: /root/auth/client_auth
       register: clientres
 
     - debug:
-        msg: "Database IP: {{ clientres.instances[0].networks[0].ip }}"
+        msg: "Client IP: {{ clientres.instances[0].networks[0].ip }}"
 
     - name: Insert private ips into ansible hosts file
       ansible.builtin.blockinfile:
@@ -65,6 +65,6 @@
 
           [client]
           {{ clientres.instances[0].networks[0].ip }}
-        
+
         create: yes
         insertafter: EOF
