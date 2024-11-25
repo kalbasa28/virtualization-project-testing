@@ -18,7 +18,7 @@ Thats it, everything else will be set up from the main vm
 su # to become root
 cd ~ # to go to root's home dir (important!)
 apt update
-install git
+apt -y install git
 git clone https://github.com/dmitru4ok/virtualization-project.git
 cd virtualization-project/telecomms/shell
 chmod +x Main.sh
