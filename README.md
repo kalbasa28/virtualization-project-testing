@@ -26,4 +26,4 @@ chmod +x Main.sh
 ```
 4. The script will ask you for your OpenNebula creadentials.
 5. then ansible-vm long updating will start
-6. after that, it will create webserver-vm (no config) and populate hosts file with its private ip
+6. after that, it will create webserver-vm, client-vm, and db-vm without any config. It will also populate hosts file with VM private ips
