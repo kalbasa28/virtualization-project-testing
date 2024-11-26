@@ -1,6 +1,6 @@
 - name: Install PostgreSQL
-  hosts: _HOST_2
-  gather_facts: true
+  hosts: db
+  gather_facts: true  # Please keep it this way, need it for {{ ansible_distribution_release }}
   become: true
   tasks:
     - name: packages | ensure apt list dir exists
