@@ -1,3 +1,4 @@
+---
 - name: Install PostgreSQL
   hosts: db
   gather_facts: true  # Please keep it this way, need it for {{ ansible_distribution_release }}
