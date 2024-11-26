@@ -49,9 +49,9 @@ sleep 15
 eval "$(ssh-agent -s)" 
 ssh-keygen -t ed25519  -N "" -f ~/.ssh/id_ed25519
 ssh-add
-sshpass -p $VM_PASS ssh-copy-id -o StrictHostKeyChecking=no yudm1317@$WEBSERVER_PRIVATE_IP
-sshpass -p $VM_PASS ssh-copy-id -o StrictHostKeyChecking=no yudm1317@$DB_PRIVATE_IP
-sshpass -p $VM_PASS ssh-copy-id -o StrictHostKeyChecking=no yudm1317@$CLIENT_PRIVATE_IP
+sshpass -p $VM_PASS ssh-copy-id -o StrictHostKeyChecking=no $WEBSERVER_VM_UNAME@$WEBSERVER_PRIVATE_IP
+sshpass -p $VM_PASS ssh-copy-id -o StrictHostKeyChecking=no $DB_VM_UNAME@$DB_PRIVATE_IP
+sshpass -p $VM_PASS ssh-copy-id -o StrictHostKeyChecking=no $CLIENT_VM_UNAME@$CLIENT_PRIVATE_IP
 
 
 
