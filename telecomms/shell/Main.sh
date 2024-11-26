@@ -43,6 +43,8 @@ WEBSERVER_PRIVATE_IP=$(awk '/\[webserver\]/ {getline; print}' /etc/ansible/hosts
 DB_PRIVATE_IP=$(awk '/\[db\]/ {getline; print}' /etc/ansible/hosts)
 CLIENT_PRIVATE_IP=$(awk '/\[client\]/ {getline; print}' /etc/ansible/hosts)
 
+# sometimes require time even after the instantiation playbook
+sleep 15
 
 eval "$(ssh-agent -s)" 
 ssh-keygen -t ed25519  -N "" -f ~/.ssh/id_ed25519
@@ -54,9 +56,4 @@ sshpass -p $VM_PASS ssh-copy-id -o StrictHostKeyChecking=no yudm1317@$CLIENT_PRI
 
 
 # can safely execute ansible playbooks here, for example:
-# ansible-playbook webserver.yaml -K 
-
-# but have to tune users for now. Can't do root ping-pong for some reason.
-ansible webserver -m ping --extra-vars "ansible_user=$WEBSERVER_VM_UNAME"
-ansible client -m ping --extra-vars "ansible_user=$CLIENT_VM_UNAME"
-ansible db -m ping --extra-vars "ansible_user=$DB_VM_UNAME"
+ansible-playbook ../ansible/webserver.yaml --extra-vars "ansible_become_pass=$VM_PASS ansible_user=$WEBSERVER_VM_UNAME"

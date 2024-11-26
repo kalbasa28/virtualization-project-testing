@@ -1,0 +1,14 @@
+---
+- name: Configure webserver VM
+  gather_facts: no
+  become: yes
+  hosts: webserver
+  tasks:
+    - name: Create lock dir
+      file:
+        path: /var/lib/apt/lists
+        state: directory
+
+    - name: Update repo entries
+      apt:
+        update_cache: yes
