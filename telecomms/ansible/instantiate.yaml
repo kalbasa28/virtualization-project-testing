@@ -17,8 +17,6 @@
         memory: 1024 MB
         attributes:
           name: webserver-vm
-          NIC:
-            - TCP_PORT_FORWARDING: "5000"
         state: present
       environment:
         ONE_AUTH: /root/auth/webserver_auth
