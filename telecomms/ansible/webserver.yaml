@@ -49,6 +49,7 @@
           - docker-ce
           - docker-ce-cli
           - containerd.io
+          - python3-requests
         state: present
       
     - name: Ensure Docker runs
@@ -65,11 +66,13 @@
 
     - name: copy web folder from ansible to webserver
       ansible.builtin.copy:
-        src: ~/virtualization-project/telecomms/web
+        src: ~/virtualization-project/telecomms/web/
         dest: ~/web
     
     - name: build container
       command: docker build -t telecomm_provider .
+      args:
+        chdir: ~/web
 
     - name: run container
       docker_container:
@@ -78,12 +81,5 @@
         ports: 
           - 5000:5000
         env:
-          - ON_LOGIN: "{{on_login}}"
-          - ON_PASS: "{{on_pass}}"
-    
-  
-        
-    
-
-    
-    
+          ON_LOGIN: "{{on_login}}"
+          ON_PASS: "{{on_pass}}"
