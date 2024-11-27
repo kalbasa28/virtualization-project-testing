@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Your Virtual Machines{% endblock %}
+{% block content %}
+    <h4>{{user_data["login"]}}, these are your VMs</h4>
+    {% if vmlist | length > 0 %}
+    <ol>
+        {% for vm in vmlist %}
+            <li>
+                {% if vm["STATE"] in ["INIT", "PENDING", "HOLD"] %}
+                    <p>ID: {{ vm["ID"] }} | name: {{ vm["NAME"]}} - {{ vm["STATE"]}}</p>
+                {% else %}
+                    <a href="/vm/{{ vm['ID'] }}">ID: {{ vm["ID"] }} | name: {{ vm["NAME"]}} - {{ vm["STATE"]}}</a>
+                {% endif%}    
+            </li>
+        {% endfor %}
+    </ol>
+    {% else %}
+        <p>Oops, no VMs yet... <a href={{url_for('create')}}>Create one now!</a></p>
+    {% endif %}
+{% endblock %}

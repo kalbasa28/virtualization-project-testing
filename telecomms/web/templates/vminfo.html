@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}VM INFORMATION{% endblock %}
+{% block content %}
+    <h4>Your {{vm_info["NAME"]}}, state: {{vm_info["STATE"]}}</h4>
+    
+    <ul style="list-style: none">
+        <li>
+            <p>CONNECT HEALTHY: {{vm_info["CONNECT_INFO1"]}}</p>
+        </li>
+        <li>
+            <p>CONNECT MENTAL: {{vm_info["CONNECT_INFO2"]}}</p>
+        </li>
+        <li>
+            <p>DESCRIPTION: {{vm_info["DESCRIPTION"]}}</p>
+        </li>
+        <li>
+            <p>PUBLIC_IP: {{vm_info["PUBLIC_IP"]}}</p>
+        </li>
+        <li>
+            <p>PRIVATE_IP: {{vm_info["PRIVATE_IP"]}}</p>
+        </li>
+        <li>
+            <p>TCP_PORT_FORWARDING: {{vm_info["TCP_PORT_FORWARDING"]}}</p>
+        </li>
+    </ul>
+    <h5>Manage VM:</h5>
+<ul>
+    {% if vm_info["STATE"] in ["RUNNING", "POWEROFF"]%}
+    <li>
+        <form method="POST" action="{{ url_for('manage_vm_action', id=vm_info['ID'], action='undeploy') }}">
+            <button type="submit">Undeploy</button>
+        </form>
+    </li>
+    <li>
+        <form method="POST" action="{{ url_for('manage_vm_action', id=vm_info['ID'], action='shutdown-hard') }}">
+            <button type="submit">Delete</button>
+        </form>
+    </li>
+    {% endif %}
+    {% if vm_info["STATE"] in ["UNDEPLOYED", "STOPPED", "POWEROFF"]%}
+    <li>
+        <form method="POST" action="{{ url_for('manage_vm_action', id=vm_info['ID'], action='resume') }}">
+            <button type="submit">Resume</button>
+        </form>
+    </li>
+    {% endif %}
+    {% if vm_info["STATE"] == "RUNNING" %}
+    <li>
+        <form method="POST" action="{{ url_for('manage_vm_action', id=vm_info['ID'], action='poweroff') }}">
+            <button type="submit">Poweroff</button>
+        </form>
+    </li>
+    {% endif %}
+</ul>
+{% endblock %}
+    

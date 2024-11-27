@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Create VM{% endblock %}
+{% block content %}
+<h1>Create a New Virtual Machine</h1>
+<form method="POST" action="/create">
+    <div>
+        <label for="vm_name">VM Name:</label>
+        <input type="text" id="vm_name" name="vm_name" required>
+    </div>
+    
+    <div>
+        <label for="template">Template:</label>
+        <select id="template" name="template" required>
+            <option value="" disabled selected>Select a template</option>
+            {% for template in templates %}
+                <option value="{{ template.ID }}">{{ template.ID }} - {{ template.NAME }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    
+    <button type="submit">Create VM</button>
+</form>
+{% endblock %}
