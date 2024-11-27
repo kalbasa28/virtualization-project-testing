@@ -56,6 +56,7 @@ sshpass -p $VM_PASS ssh-copy-id -o StrictHostKeyChecking=no $CLIENT_VM_UNAME@$CL
 
 
 # can safely execute ansible playbooks here, for example:
-ansible-playbook ../ansible/webserver.yaml --extra-vars "ansible_become_pass=$VM_PASS ansible_user=$WEBSERVER_VM_UNAME"
+# REFACTOR --extra-vars into inventory files (encrypt with vault)
+ansible-playbook ../ansible/webserver.yaml --extra-vars "ansible_become_pass=$VM_PASS ansible_user=$WEBSERVER_VM_UNAME on_pass=$WEBSERVER_VM_PASS on_login=$WEBSERVER_VM_UNAME"
 ansible-playbook ../ansible/client.yaml --extra-vars "ansible_become_pass=$VM_PASS ansible_user=$CLIENT_VM_UNAME"
 ansible-playbook ../ansible/database.yaml --extra-vars "ansible_become_pass=$VM_PASS ansible_user=$DB_VM_UNAME"
