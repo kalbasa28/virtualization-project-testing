@@ -66,7 +66,7 @@
     - name: copy web folder from ansible to webserver
       ansible.builtin.copy:
         src: ~/virtualization-project/telecomms/web
-        dist: ~/web
+        dest: ~/web
     
     - name: build container
       command: docker build -t telecomm_provider .
