@@ -25,7 +25,7 @@
           - libindicator7
           - wget
           - gnupg
-          - lynx
+          - w3m
         state: present
 
     - name: Download Google Chrome package

@@ -33,10 +33,12 @@ sudo apt-get -y install gnupg wget apt-transport-https
 wget -O- "https://keyserver.ubuntu.com/pks/lookup?fingerprint=on&op=get&search=0x6125E2A8C77F2818FB7BD15B93C4A3FD7BB9C367" | sudo gpg --dearmour -o /usr/share/keyrings/ansible-archive-keyring.gpg
 echo "deb [signed-by=/usr/share/keyrings/ansible-archive-keyring.gpg] http://ppa.launchpad.net/ansible/ansible/ubuntu $UBUNTU_CODENAME main" | sudo tee /etc/apt/sources.list.d/ansible.list
 
-sudo apt update && sudo apt -y upgrade && sudo apt -y install ansible
+# onevm
+wget -q -O- https://downloads.opennebula.io/repo/repo2.key | gpg --dearmor --yes --output /etc/apt/keyrings/opennebula.gpg
+sudo echo "deb [signed-by=/etc/apt/keyrings/opennebula.gpg] https://downloads.opennebula.io/repo/6.8/Ubuntu/22.04 stable opennebula" > /etc/apt/sources.list.d/opennebula.list
+sudo apt update && sudo apt -y upgrade && sudo apt -y install ansible opennebula-tools python3-pip
 
-sudo apt install python3-pip -y
-
+# create vms and write prvate ips to /etc/ansible/hosts
 sudo ansible-playbook ../ansible/instantiate.yaml
 
 WEBSERVER_PRIVATE_IP=$(awk '/\[webserver\]/ {getline; print}' /etc/ansible/hosts)
@@ -60,3 +62,17 @@ sshpass -p $VM_PASS ssh-copy-id -o StrictHostKeyChecking=no $CLIENT_VM_UNAME@$CL
 ansible-playbook ../ansible/webserver.yaml --extra-vars "ansible_become_pass=$VM_PASS ansible_user=$WEBSERVER_VM_UNAME on_pass=$WEBSERVER_VM_PASS on_login=$WEBSERVER_VM_UNAME"
 ansible-playbook ../ansible/client.yaml --extra-vars "ansible_become_pass=$VM_PASS ansible_user=$CLIENT_VM_UNAME"
 ansible-playbook ../ansible/database.yaml --extra-vars "ansible_become_pass=$VM_PASS ansible_user=$DB_VM_UNAME"
+
+ENDPOINT=https://grid5.mif.vu.lt/cloud3/RPC2
+VMQUERY=$(onevm list --user $WEBSERVER_VM_UNAME --password $WEBSERVER_VM_PASS --endpoint $ENDPOINT | grep webserver-vm)
+VMID=$(echo ${VMQUERY} | cut -d ' ' -f 1)
+onevm show $VMID --user $WEBSERVER_VM_UNAME --password $WEBSERVER_VM_PASS --endpoint $ENDPOINT > $VMID.txt
+PRIV_IP=$(cat ${VMID}.txt | grep PRIVATE\_IP | cut -d '=' -f 2 | tr -d '"')
+PUBLIC_IP=$(cat ${VMID}.txt | grep PUBLIC\_IP| cut -d '=' -f 2 | tr -d '"')
+
+PORT=$(cat $VMID.txt | grep TCP_PORT_FORWARDING | cut -d ' ' -f 2 |cut -d ':' -f 1)
+ssh -t $CLIENT_VM_UNAME@$CLIENT_PRIVATE_IP "w3m http://${PRIV_IP}:5000"
+echo "-----------------------------------------"
+echo "WEBAPP DEPLOYED"
+echo "ACCESSIBLE AT: http://${PUBLIC_IP}:${PORT}"
+echo "-----------------------------------------"
