@@ -12,7 +12,7 @@
     - name: Instantiate webserver templated VM
       community.general.one_vm:
         api_url: https://grid5.mif.vu.lt/cloud3/RPC2
-        template_id: 2365
+        template_id: 2730
         disk_size: 8 GB
         attributes:
           name: webserver-vm
