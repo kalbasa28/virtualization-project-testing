@@ -56,5 +56,34 @@
         name: docker
         state: started
         enabled: yes
+
+    - name: Create project web folder
+      file:
+        path: ~/web
+        state: directory
+        mode: '0755'
+
+    - name: copy web folder from ansible to webserver
+      ansible.builtin.copy:
+        src: ~/virtualization-project/telecomms/web
+        dist: ~/web
+    
+    - name: build container
+      command: docker build -t telecomm_provider .
+
+    - name: run container
+      docker_container:
+        image: telecomm_provider
+        name: provider_app
+        ports: 
+          - 5000:5000
+        env:
+          - ON_LOGIN: "{{on_login}}"
+          - ON_PASS: "{{on_pass}}"
+    
+  
+        
+    
+
     
     
