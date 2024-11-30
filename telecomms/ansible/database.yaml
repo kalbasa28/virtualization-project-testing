@@ -1,36 +1,89 @@
 ---
-- name: Install PostgreSQL
-  hosts: db
-  gather_facts: true  # Please keep it this way, need it for {{ ansible_distribution_release }}
-  become: true
-  tasks:
-    - name: packages | ensure apt list dir exists
-      file:
-        path: /var/lib/apt/lists/
-        state: directory
-        mode: 0755
+  - name: Configure db VM
+    hosts: db
+    become: true
+    vars_files:
+      - ../misc/credentials.yaml
+    vars:
+      default_container_name: postgres-server
+      default_container_image: postgres
+      ansible_user: "{{ db_vm_username }}"
+  
+    tasks:
+      - name: packages | ensure apt list dir exists
+        file:
+          path: /var/lib/apt/lists/
+          state: directory
+          mode: 0755
+  
+      - name: Install required system packages
+        apt:
+          pkg:
+            - aptitude
+            - apt-transport-https
+            - ca-certificates
+            - curl
+            - software-properties-common
+            - python3-pip
+            - virtualenv
+            - python3-setuptools
+            - postgresql-client
+          state: latest
+          update_cache: true
+  
+      - name: Add Docker GPG apt Key
+        apt_key:
+          url: https://download.docker.com/linux/ubuntu/gpg
+          state: present
+  
+      - name: Add Docker Repository
+        apt_repository:
+          repo: deb https://download.docker.com/linux/ubuntu focal stable
+          state: present
 
-    - name: Update apt cache
-      apt:
-        update_cache: yes
-
-    - name: Ensure gpg is installed
-      apt:
-        name: gnupg
-        state: present
-
-    - name: Add pgdg repo to sources.list.d
-      lineinfile:
-        path: /etc/apt/sources.list.d/pgdg.lts
-        line: "deb http://apt.postgresql.org/pub/repos/apt {{ ansible_distribution_release }}-pgdg main"
-        create: true
-
-    - name: Download PostgreSQL key and add it to system keyring
-      apt_key:
-        url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
-        state: present
-
-    - name: Install PostgreSQL
-      apt:
-        name: postgresql
-        state: present
+      - name: Update apt and install docker-ce
+        apt:
+          name: docker-ce
+          state: latest
+          update_cache: true
+  
+      - name: Install Docker Module for Python
+        pip:
+          name: docker
+  
+      - name: Pull Postgres Docker image
+        community.docker.docker_image:
+          name: "{{ default_container_image }}"
+          source: pull
+  
+      - name: Create postgres container
+        community.docker.docker_container:
+          name: "{{ default_container_name }}"
+          image: "{{ default_container_image }}"
+          state: present
+          env:
+            POSTGRES_PASSWORD: "{{ POSTGRES_PASSWORD }}"
+            POSTGRES_USER: "{{ POSTGRES_USER }}"
+            POSTGRES_DB: "{{ POSTGRES_DB }}"
+          ports:
+            - "5432:5432"
+  
+      - name: Ensure postgres container is started
+        community.docker.docker_container:
+          name: "{{ default_container_name }}"
+          state: started
+  
+      - name: Pause for 10 seconds to ensure the container is fully up
+        pause:
+          seconds: 10
+  
+      - name: Copy database setup script to remote host
+        ansible.builtin.copy:
+          src: ../shell/database_setup.sh
+          dest: /tmp/database_setup.sh
+          mode: '0755'
+  
+      - name: Execute database setup script
+        ansible.builtin.shell: /tmp/database_setup.sh
+        args:
+          executable: /bin/bash

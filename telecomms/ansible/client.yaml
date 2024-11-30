@@ -2,7 +2,11 @@
 - name: Setup Wayland and Google Chrome
   hosts: client
   become: true
-
+  vars_files:
+      - ../misc/credentials.yaml
+  vars:
+    ansible_user: "{{ client_vm_username }}"
+  
   tasks:
     - name: Ensure /var/lib/apt/lists/ directory exists
       file:
@@ -41,6 +45,7 @@
         mkdir -p /run/user/$(id -u)
         chown $(id -u):$(id -g) /run/user/$(id -u)
       become: false
+      
     - name: Ensure environment setup for Weston
       file:
         path: "/run/user/{{ ansible_user }}"
