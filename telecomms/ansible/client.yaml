@@ -25,10 +25,7 @@
           - dbus
           - dbus-x11
           - libxss1
-          - libappindicator3-1
-          - libindicator7
           - wget
-          - gnupg
           - w3m
         state: present
 
