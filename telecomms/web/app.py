@@ -63,6 +63,7 @@ def create():
                 res_id = onevm.instantiate_vm(template_id, vm_name)
             except onevm.pyone.OneException:
                 flash("Error happened!", 'danger')
+                return redirect(url_for("create"))
             finally:
                 if res_id:
                     add_vm(user_data["login"], res_id)
