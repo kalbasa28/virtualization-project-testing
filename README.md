@@ -12,9 +12,13 @@ cd virtualization-project/telecomms/shell
 chmod +x Main.sh
 ./Main.sh
 ```
-4. The script will ask you for your vm password (we agreed on it earlier) and OpenNebula credentials.
+4. The script will ask you for your vm password (we agreed on it earlier) and 3 pairs of OpenNebula credentials.
 5. then ansible-vm long updating will start
-6. after that, it will create webserver-vm, client-vm, and db-vm without any config. It will also populate hosts file with VM private ips and add ssh keys to the machines
+6. after that, it will create webserver-vm, client-vm, and db-vm and populate hosts file with VM private ips.
+7. file /misc/credentials.yaml will get populated by sudo pass for the machines, ON logins and passwords, as well as with DB VM private IP-address.
+8. ssh-keys will be added to the machines
+9. 3 ansible playbooks will run configuring the app
+10. after config is done, script will open the page of webapp in w3m browser through ssh on client-vm
 
 # The client-vm
 1.Open VNC in OpenNebula
@@ -34,14 +38,3 @@ google-chrome-stable --ozone-platform=wayland --no-sandbox
 
 ```
 4.Enjoy
-
-
-# The webapp
-In virtualization folder (root of the project) create python virtual environment:
-```
-python3 -m venv .venv
-. .venv/bin/activate # to enter it (a little different for Windows, check how-to, pls)
-cd telecomms/web
-pip install -r requirements.txt 
-flask --app app run
-```
